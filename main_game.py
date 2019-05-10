@@ -38,21 +38,21 @@ CONFIG_AREA_H = 10
 CONFIG_CELL_W = 60
 CONFIG_CELL_H = 60
 
+CONFIG_RESOURCE_MAX = 10
+CONFIG_RESOURCE_SPAWN_METHOD = 0 # 0:Basic Method
+CONFIG_RESOURCE_SPAWN_RATE = 0.1
 
 
 area_w = CONFIG_AREA_W
 area_h = CONFIG_AREA_W
 
 area_resource = np.zeros((area_w,area_h),dtype=int)
-
 instances = list()
 
 global_turn = 0
 
 cell_w = CONFIG_CELL_W
 cell_h = CONFIG_CELL_H
-
-
 
 class instance():
     def __init__(self, idx, initx, inity, player = False):
@@ -73,7 +73,41 @@ class instance():
 
         if player: self.controller = 1
         else: self.controller = 0
+    
+    def execute_turn(self):
+        # Move or attack
+        if   self.state_reserved == STATE_MOVL:
+            if self.x > 0: self.x -= 1
+        elif self.state_reserved == STATE_MOVR:
+            if self.x < area_w-1: self.x += 1
+        elif self.state_reserved == STATE_MOVU:
+            if self.y > 0: self.y -= 1
+        elif self.state_reserved == STATE_MOVD:
+            if self.y < area_h-1: self.y += 1
+        
+        # Gain resource
+        self.hp+=area_resource[self.x,self.y]
+        area_resource[self.x,self.y] = 0
+        self.health_check()
 
+        # Decay health
+        if self.hp_decay_mode == 0:
+            self.hp -= self.hp_decay_value
+        self.health_check()
+
+    def health_check(self):
+        if self.hp > self.hp_max:
+            self.hp = self.hp_max
+        elif self.hp <= 0:
+            self.hp = 0 # Death
+        
+
+
+def spawn_resource_basic():
+    for x in range(area_w):
+        for y in range(area_h):
+            if np.random.rand()<0.1:
+                area_resource[x,y] += 1
 
 
 def game_init():
@@ -90,17 +124,21 @@ def game_init():
 
 
 def execute_turn():
+    # Instance action
     global global_turn
     for inst in instances:
-        if   inst.state_reserved == STATE_MOVL:
-            inst.x -= 1
-        elif inst.state_reserved == STATE_MOVR:
-            inst.x += 1
-        elif inst.state_reserved == STATE_MOVU:
-            inst.y -= 1
-        elif inst.state_reserved == STATE_MOVD:
-            inst.y += 1
-
+        inst.execute_turn()
+    
+    # Spawn resources
+    if CONFIG_RESOURCE_SPAWN_METHOD == 0:
+        spawn_resource_basic()
+    # Cap resources
+    for x in range(area_w):
+        for y in range(area_h):
+            if area_resource[x,y] > CONFIG_RESOURCE_MAX:
+                area_resource[x,y] = CONFIG_RESOURCE_MAX;
+    
+    # Increase turn
     global_turn += 1
 
 def get_state_text(ind):
@@ -167,12 +205,18 @@ if __name__ == "__main__":
         for xi,line in enumerate(area_resource):
             for yi, elem in enumerate(line):
                 pg.draw.polygon(scr, COL_BLACK, get_grid_rectange(xi,yi,0),4)
-        
+                text = f_b20.render(str(area_resource[xi,yi]), True, COL_GREEN)
+                scr.blit(text, (xi*cell_w+5,yi*cell_h+5))
+                
         for ii, inst in enumerate(instances):
             pg.draw.polygon(scr,COL_RED,get_grid_rectange(inst.x,inst.y,3),3)
             text = f_b20.render(get_state_text(inst.state_reserved), True, COL_BLUE)
-            scr.blit(text, (inst.x*cell_w+5,inst.y*cell_h+5))
-
+            scr.blit(text, (inst.x*cell_w+20,inst.y*cell_h+45))
+            text = f_b20.render(str(inst.hp), True, COL_RED)
+            scr.blit(text, (inst.x*cell_w+20,inst.y*cell_h+30))
+            text = f_b20.render(str(inst.x)+","+str(inst.y), True, COL_RED)
+            scr.blit(text, (inst.x*cell_w+20,inst.y*cell_h+15))
+        
         pg.display.flip()
 
         if turn_passed:
