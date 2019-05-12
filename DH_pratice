@@ -1,0 +1,99 @@
+import pygame as py
+import numpy as np
+
+BLACK = (  0,  0,  0)
+WHITE = (255,255,255)
+BLUE  = (  0,  0,255)
+GREEN = (  0,255,  0)
+RED   = (255,  0,  0)
+MINT = (189, 252, 201)
+
+color = [BLACK, WHITE, BLUE, GREEN, RED, MINT]
+
+width = 500
+height= 500
+size = 10
+
+HP_Max = 100
+HP_init = 10
+DMG = HP_init/5
+
+character = []
+character_num = 6
+action =  #move left =1, right =2, up =3, down =4, attack left=5, right=6, up=7, down=8
+
+pg.init()
+display = pg.display.set-mode((width, height))
+pg.display.set_caption("생존게임")
+keys = pg.key.get_pressed()
+
+def food_spawn(): # 음식 생성
+    for x in range(size):
+        for y in ange(size):
+            area_food[x,y] = round(np.random.rand()*10)
+
+def character_make(): #캐릭 생성
+    for i=0 in character_num-1:
+        exist_color = []
+        color_choice = 0
+        while color_choice = 0
+            character_color = random.Choice(color)
+            if character_color not in exist_color:
+                exist_color += character_color
+                color_choice = 1   
+        charater[i] = [action, HP_init, DMG, character_color, location_x, location_y, player = 0]
+        
+def character_spawn(): #캐릭 위치 시키기
+    character_exist = []
+    for i=0 in character_num-1:
+        character[i][3] = 50*round(np.random.rand())
+        character[i][4] = 50*round(np.random.rand())
+        character_exist = []
+for event in pg.event.get():
+    if event.type == pg.KEYDOWN
+        if event.key == K_LEFT:
+            if character_left == character
+                character[i][0] = 4
+            else:
+                character_Do[i][0] = 0
+        elif event.key == K_RIGHT:
+            if character_right == character
+                character_Do[i][0] = 5
+            else:
+                character_Do[i][0] = 1
+        elif event.key == K_UP:
+             if character_up == character
+                character_Do[i][0] = 6
+            else:
+                character_Do[i][0] = 2
+        elif event.key == K_DOWN:
+             if character_down == character
+                character_Do[i][0] = 7
+            else:
+                character_Do[i][0] = 3
+                
+for i=0 in character_num-1
+    if character[i][0] == 0:
+        character[i][4] -= 50
+        character[i][1]+=area_food[character[i][4],character[i][4]]
+    elif character[i][0] == 0:
+        character[i][4] += 50
+    elif character[i][0] == 0:
+        character[i][5] += 50
+    elif character[i][0] == 0:
+        character[i][5] -= 50
+    elif character[i][0] == 0:
+        
+    elif character[i][0] == 0:
+        
+    elif character[i][0] == 0:
+        
+    elif character[i][0] == 0:
+    
+    character[i][1]+=area_food[character[i][4],character[i][4]]
+    area_food[character[i][4],character[i][4]] = 0
+    elif character[i][1] >= 100:
+    character[i][0] = 100
+            
+            
+            
